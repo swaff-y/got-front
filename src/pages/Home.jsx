@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
 import "./home.css";
 import Territory from '../components/Territory';
 import { 
@@ -6,20 +6,27 @@ import {
   b1, b2, b3, b4, b5, b6, b7,
   c1, c2, c3, c4, 
   d1, d2, d3, d4,
-  e1, e2, e3, e4, e5, e6,
+  e1, e2, e3, e4, e5,
   f1, f2,
   g1, g2, g3, g4, g5,
   h1, h2, h3, h4,
   i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13
 } from "../pathData";
+import { useParams } from 'react-router';
+import { getUsers } from '../redux/apiCall';
+import { useDispatch, useSelector } from "react-redux";
 
 const Home = (props) => {
-  const stk = "green";
-  const opac = "0.00";
+  const params = useParams();
+  const dispatch = useDispatch();
+  const users = useSelector(state=>state.users.collection);
 
-  const handleClick = (e) => {
-    console.log("%cClick", "font-size:20px; color: orange;", e.target.id);
-  }
+  useEffect(()=>{
+    getUsers(dispatch);
+  },[dispatch])
+
+  console.log("users", users)
+  console.log("params", params?.name)
 
    return(
     <div
