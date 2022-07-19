@@ -4,11 +4,11 @@ import "./territory.css";
 const Territory = ({xBox, yBox, path, terId}) => {
   const [click, setClick] = useState(0);
 
-  const stk = "green";
-  const opac = "0.00";
+  const stk = "gray";
+  const opac = "0.40";
 
   const handleClick = (e) => {
-    // console.log("%cClick", "font-size:20px; color: orange;", e.target.id);
+    console.log("%cClick", "font-size:20px; color: orange;", e.target.id);
     let up = click + 1;
     setClick(up)
   }
@@ -18,17 +18,17 @@ const Territory = ({xBox, yBox, path, terId}) => {
             {
               click === 0
               ?
-              <path fill="red" fillOpacity={opac} stroke={stk} d={path} id={terId} className="selections" onClick={handleClick}></path>
+              <path fill="white" fillOpacity="0.00" d={path} id={terId} className="selections" onClick={handleClick}></path>
               :
               <>
               <foreignObject x={xBox} y={yBox} width="20" height="20">
                 <div xmlns="http://www.w3.org/1999/xhtml">
-                  <div style={{border: "1px solid red", color: "red", background: "white"}}>
+                  <div className = "unitCounter">
                     {click}
                   </div>
                 </div>
                 </foreignObject>
-                <path fill="red" fillOpacity={opac} stroke={stk} d={path} id={terId} className="selections" onClick={handleClick}></path>
+                <path fill="white" fillOpacity={opac} d={path} id={terId} className="selections" onClick={handleClick}></path>
               </>
             }
 
