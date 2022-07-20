@@ -9,6 +9,11 @@ import {
     usersStart,
     getUsersSuccess
 } from "./usersReducer";
+import { 
+    territoriesFailure,
+    territoriesStart,
+    getTerritoriesSuccess
+} from "./territoriesReducer";
 
 export const getState = async (dispatch) => {
     dispatch(stateStart());
@@ -30,5 +35,16 @@ export const getUsers = async (dispatch) => {
     } catch (err) {
         dispatch(usersFailure());
         console.log("%cERROR users","color:red;font-size:24px;",err)
+    }
+}
+export const getTerritories = async (dispatch) => {
+    dispatch(territoriesStart());
+    try {
+        const res = await request.get("/territories");
+        dispatch(getTerritoriesSuccess(res.data));
+        console.log("%cSuccess territories","color:green;font-size:24px;",res.data)
+    } catch (err) {
+        dispatch(territoriesFailure());
+        console.log("%cERROR territories","color:red;font-size:24px;",err)
     }
 }
