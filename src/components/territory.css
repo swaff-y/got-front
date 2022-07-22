@@ -1,8 +1,9 @@
 .territory__container{
-
+   
 }
 
 .unitCounter{
+    text-align: center;
     color: white;
     font-weight: 800;
     border: 1px solid white;
@@ -11,6 +12,5 @@
 }
 
 .selections{
-
-
+    
 }

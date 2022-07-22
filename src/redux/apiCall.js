@@ -48,3 +48,13 @@ export const getTerritories = async (dispatch) => {
         console.log("%cERROR territories","color:red;font-size:24px;",err)
     }
 }
+export const setTerritory = async (id, territory) => {
+    try {
+        const res = await request.patch("/territories/" + id, territory);
+        console.log("%cSuccess patch territory","color:green;font-size:24px;",id)
+        return res;
+    } catch (err) {
+        console.log("%cERROR territories","color:red;font-size:24px;",err)
+        return null
+    }
+}
