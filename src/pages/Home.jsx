@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import "./home.css";
 import Territory from '../components/Territory';
 import { useNavigate, useParams } from 'react-router';
-import { getUsers, getTerritories, setTerritory, getGame } from '../redux/apiCall';
+import { getUsers, getTerritories, setTerritory, getGame, setGame } from '../redux/apiCall';
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
@@ -77,19 +77,34 @@ const Home = (props) => {
   const saveTerritory = async () => {
     const ter = await setTerritory(selectedTer.dataId, {user: selectedTer.userId, color: selectedTer.userColor, quantity: selectedTer.qty});
     if(ter){
-      let userIndex = game[0]?.gameOrder.indexOf(nextUser);
+      const userIndex = game[0]?.gameOrder.indexOf(nextUser);
+      let nextTurn;
+      if((userIndex + 1) === game[0]?.gameOrder.length)
+        nextTurn = game[0].gameOrder[0];
+      else
+        nextTurn = game[0].gameOrder[userIndex + 1];
+      
+      setGame(game[0]._id, { turn: nextTurn, saveCount: (game[0].saveCount + 1) })
+      setSelectedId("");
       navigate("/", {replace: true});
+      getTerritories(dispatch);
+      getGame(dispatch);
     } 
+  }
+
+  const handleMove = (e) => {
+    const userName = e.target.getAttribute("action");
+    navigate("/" + userName.toLowerCase(), {replace: true});
   }
 
 
   // console.log("users", users);
   // console.log("params", params?.name);
   // console.log("territories", territories);
-  console.log("Game", game);
-  console.log("nextUser", nextUser);
-  console.log("Index", game[0].gameOrder , game[0]?.gameOrder.indexOf(nextUser));
-  console.log("Selected:", selectedId, selectedTer);
+  // console.log("Game", game);
+  // console.log("nextUser", nextUser);
+  // console.log("Index", game[0].gameOrder , game[0]?.gameOrder.indexOf(nextUser));
+  // console.log("Selected:", selectedId, selectedTer);
 
    return(
     <div
@@ -100,7 +115,7 @@ const Home = (props) => {
 
         {
             territories.map((territory,index)=><Territory 
-              key={index} 
+              key={territory._id} 
               xBox={territory.xBox} 
               yBox={territory.yBox} 
               path={territory.pathData} 
@@ -120,17 +135,32 @@ const Home = (props) => {
         </svg>
 
         {
-          (params.name?.toLowerCase() === game[0]?.turn?.toLowerCase()) && <Button onClick={saveTerritory}>Save Selection</Button>
+          (params.name?.toLowerCase() === game[0]?.turn?.toLowerCase()) 
+          && 
+          <Button 
+            onClick={saveTerritory} 
+            disabled={(selectedId === "")
+          }>
+            Save Selection
+          </Button>
         }
 
         {
           <UserColors>
             {
-              users.map((user)=> 
-              <UserContainer>
-                <UserColor style={{ backgroundColor: user.color }}>{ user.name }</UserColor>
+              game[0]?.gameOrder.map((user, index)=> 
+              <UserContainer
+                key={index}
+              >
+                <UserColor 
+                  style={ { backgroundColor: users.find((usr)=>usr.name === user)?.color } }
+                  action={user}
+                  onClick={handleMove}
+                >
+                  { user }
+                </UserColor>
                 {
-                  (nextUser?.toLowerCase() === user.name?.toLowerCase())
+                  (nextUser?.toLowerCase() === user?.toLowerCase())
                   &&
                   <NextPlayer/>
                 }

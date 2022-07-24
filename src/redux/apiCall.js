@@ -58,3 +58,13 @@ export const setTerritory = async (id, territory) => {
         return null
     }
 }
+export const setGame = async (id, turn) => {
+    try {
+        const res = await request.patch("/game/" + id, turn);
+        console.log("%cSuccess patch turn","color:green;font-size:24px;",id)
+        return res;
+    } catch (err) {
+        console.log("%cERROR turn","color:red;font-size:24px;",err)
+        return null
+    }
+}
