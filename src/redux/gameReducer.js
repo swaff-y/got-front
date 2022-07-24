@@ -6,19 +6,19 @@ const initialState = {
     error: false
 };
 
-export const stateSlice = createSlice({
-    name: 'pickState',
+export const gameSlice = createSlice({
+    name: 'game',
     initialState,
     reducers: {
-        stateStart: (state) => {
+        gameStart: (state) => {
             state.isFetching = true;
             state.error = false;
         },
-        stateFailure: (state) => {
+        gameFailure: (state) => {
             state.isFetching = false;
             state.error = true
         },
-        getStateSuccess: (state, action) => {
+        getGameSuccess: (state, action) => {
             state.isFetching = false;
             state.collection = action.payload
         },
@@ -26,9 +26,9 @@ export const stateSlice = createSlice({
 });
 
 export const { 
-    stateStart, 
-    stateFailure,
-    getStateSuccess
-  } = stateSlice.actions;
+    gameStart, 
+    gameFailure,
+    getGameSuccess
+  } = gameSlice.actions;
 
-export default stateSlice.reducer;
+export default gameSlice.reducer;

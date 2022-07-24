@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import "./home.css";
 import Territory from '../components/Territory';
 import { useNavigate, useParams } from 'react-router';
-import { getUsers, getTerritories, setTerritory } from '../redux/apiCall';
+import { getUsers, getTerritories, setTerritory, getGame } from '../redux/apiCall';
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
@@ -49,15 +49,20 @@ const Home = (props) => {
   const dispatch = useDispatch();
   const users = useSelector(state=>state.users.collection);
   const territories = useSelector(state=>state.territories.collection);
+  const game = useSelector(state=>state.game.collection);
   const [selectedId, setSelectedId] = useState("");
   const [selectedTer, setSelectedTer] = useState({});
-
-  const nextUser = "Enzo";
+  const [nextUser, setNextUser] = useState("");
 
   useEffect(()=>{
     getUsers(dispatch);
     getTerritories(dispatch);
+    getGame(dispatch)
   },[dispatch])
+
+  useEffect(()=>{
+    setNextUser(game[0]?.turn);
+  },[game])
 
   const clickHandler = (terId, dataId, userId, userColor, qty) => {
     setSelectedId(terId);
@@ -71,13 +76,19 @@ const Home = (props) => {
 
   const saveTerritory = async () => {
     const ter = await setTerritory(selectedTer.dataId, {user: selectedTer.userId, color: selectedTer.userColor, quantity: selectedTer.qty});
-    if(ter) navigate("/", {replace: true});
+    if(ter){
+      let userIndex = game[0]?.gameOrder.indexOf(nextUser);
+      navigate("/", {replace: true});
+    } 
   }
 
 
   // console.log("users", users);
   // console.log("params", params?.name);
   // console.log("territories", territories);
+  console.log("Game", game);
+  console.log("nextUser", nextUser);
+  console.log("Index", game[0].gameOrder , game[0]?.gameOrder.indexOf(nextUser));
   console.log("Selected:", selectedId, selectedTer);
 
    return(
@@ -109,7 +120,7 @@ const Home = (props) => {
         </svg>
 
         {
-          params.name && <Button onClick={saveTerritory}>Save Selection</Button>
+          (params.name?.toLowerCase() === game[0]?.turn?.toLowerCase()) && <Button onClick={saveTerritory}>Save Selection</Button>
         }
 
         {
@@ -119,7 +130,7 @@ const Home = (props) => {
               <UserContainer>
                 <UserColor style={{ backgroundColor: user.color }}>{ user.name }</UserColor>
                 {
-                  (nextUser.toLowerCase() === user.name.toLowerCase())
+                  (nextUser?.toLowerCase() === user.name?.toLowerCase())
                   &&
                   <NextPlayer/>
                 }

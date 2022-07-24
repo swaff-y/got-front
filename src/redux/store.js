@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
-import stateReducer from "./stateReducer";
+import gameReducer from "./gameReducer";
 import usersReducer from "./usersReducer";
 import territoriesReducer from "./territoriesReducer";
 
 const allReducers = combineReducers({
-    pickState: stateReducer,
+    game: gameReducer,
     users: usersReducer,
     territories: territoriesReducer
 })

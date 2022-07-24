@@ -1,9 +1,9 @@
 import { request } from "../requestMethods";
 import { 
-    stateFailure,
-    stateStart,
-    getStateSuccess
-} from "./stateReducer";
+    gameFailure,
+    gameStart,
+    getGameSuccess
+} from "./gameReducer";
 import { 
     usersFailure,
     usersStart,
@@ -15,15 +15,15 @@ import {
     getTerritoriesSuccess
 } from "./territoriesReducer";
 
-export const getState = async (dispatch) => {
-    dispatch(stateStart());
+export const getGame = async (dispatch) => {
+    dispatch(gameStart());
     try {
-        const res = await request.get("/state");
-        dispatch(getStateSuccess(res.data));
-        console.log("%cSuccess state","color:green;font-size:24px;",res.data)
+        const res = await request.get("/game");
+        dispatch(getGameSuccess(res.data));
+        console.log("%cSuccess game","color:green;font-size:24px;",res.data)
     } catch (err) {
-        dispatch(stateFailure());
-        console.log("%cERROR state","color:red;font-size:24px;",err)
+        dispatch(gameFailure());
+        console.log("%cERROR game","color:red;font-size:24px;",err)
     }
 }
 export const getUsers = async (dispatch) => {

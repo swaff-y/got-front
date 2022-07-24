@@ -7,6 +7,7 @@ const Territory = ({xBox, yBox, path, terId, data, params, clickHandler, selecte
   const [click, setClick] = useState(0);
   const [color, setColor] = useState("white");
   const users = useSelector(state=>state.users.collection);
+  const game = useSelector(state=>state.game.collection);
   const name = params.name;
 
   useEffect(()=>{
@@ -39,10 +40,6 @@ const Territory = ({xBox, yBox, path, terId, data, params, clickHandler, selecte
         setClick(1);
       }
     }
-  }
-
-  const saveTerritory = async (user) => {
-    const ter = await setTerritory(data.id, {user: user._id, color: user.color, quantity: 1});
   }
 
    return(
