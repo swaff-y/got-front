@@ -58,13 +58,23 @@ export const setTerritory = async (id, territory) => {
         return null
     }
 }
-export const setGame = async (id, turn) => {
+export const setGame = async (id, turn, clbck) => {
     try {
         const res = await request.patch("/game/" + id, turn);
         console.log("%cSuccess patch turn","color:green;font-size:24px;",id)
-        return res;
+        return clbck(res);
     } catch (err) {
         console.log("%cERROR turn","color:red;font-size:24px;",err)
+        return null
+    }
+}
+export const setUser = async (id, quantity, clbck ) => {
+    try {
+        const res = await request.patch("/users/" + id, { quantity });
+        console.log("%cSuccess patch quantity","color:green;font-size:24px;",id)
+        return clbck(res);
+    } catch (err) {
+        console.log("%cERROR quantity","color:red;font-size:24px;",err)
         return null
     }
 }

@@ -2,15 +2,52 @@ import React, { useEffect, useState } from 'react';
 import "./home.css";
 import Territory from '../components/Territory';
 import { useNavigate, useParams } from 'react-router';
-import { getUsers, getTerritories, setTerritory, getGame, setGame } from '../redux/apiCall';
+import { getUsers, getTerritories, setTerritory, getGame, setGame, setUser } from '../redux/apiCall';
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
+// const Button = styled.button`
+//   position: absolute;
+//   top: 10px;
+//   left: 10px;
+//   color: green;
+// `
+const ButtonText = styled.span`
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  &:after {
+    content: "\\00bb";
+    position: absolute;
+    opacity: ${ props=>props.opc };
+    top: 0;
+    right: ${ props=>props.rt }px;
+    transition: 0.5s;
+  }
+`
+
 const Button = styled.button`
   position: absolute;
-  top: 10px;
-  left: 10px;
-  color: green;
+  top: 20px;
+  left: 120px;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px;
+  width: 170px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+
+  &:hover ${ButtonText} {
+    padding-right: 25px;
+  }
 `
 const UserColors = styled.div`
   position: absolute;
@@ -41,6 +78,27 @@ const UserColor = styled.div`
   margin-bottom: 5px;
   padding: 4px;
   color: black;
+  width: 70px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+`
+
+const CountDisp = styled.span`
+width: 28px;
+height: 28px;
+text-align: center;
+color: white;
+font-weight: 800;
+border: 1px solid white;
+border-radius: 50%;
+background-color: black;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-left: 5px;
 `
 
 const Home = (props) => {
@@ -53,6 +111,8 @@ const Home = (props) => {
   const [selectedId, setSelectedId] = useState("");
   const [selectedTer, setSelectedTer] = useState({});
   const [nextUser, setNextUser] = useState("");
+  const [opc, setOpc] = useState("0");
+  const [rt, setRt] = useState("-15");
 
   useEffect(()=>{
     getUsers(dispatch);
@@ -75,26 +135,35 @@ const Home = (props) => {
   }
 
   const saveTerritory = async () => {
-    const ter = await setTerritory(selectedTer.dataId, {user: selectedTer.userId, color: selectedTer.userColor, quantity: selectedTer.qty});
+    setOpc("0"); setRt("-5");
+    const ter = await setTerritory(selectedTer.dataId, {
+      user: selectedTer.userId, 
+      color: selectedTer.userColor, 
+      quantity: selectedTer.qty
+    });
+
     if(ter){
       const userIndex = game[0]?.gameOrder.indexOf(nextUser);
+      const user = users.find((usr)=>usr._id === selectedTer.userId);
       let nextTurn;
       if((userIndex + 1) === game[0]?.gameOrder.length)
         nextTurn = game[0].gameOrder[0];
       else
         nextTurn = game[0].gameOrder[userIndex + 1];
       
-      setGame(game[0]._id, { turn: nextTurn, saveCount: (game[0].saveCount + 1) })
+      setGame(game[0]._id, { turn: nextTurn, saveCount: (game[0].saveCount + 1) }, ()=>{getGame(dispatch);})
+      setUser(selectedTer.userId, (user.quantity - 1), ()=>{getUsers(dispatch);});
       setSelectedId("");
       navigate("/", {replace: true});
       getTerritories(dispatch);
-      getGame(dispatch);
+      // getGame(dispatch);
     } 
   }
 
   const handleMove = (e) => {
+    e.stopPropagation();
     const userName = e.target.getAttribute("action");
-    navigate("/" + userName.toLowerCase(), {replace: true});
+    navigate("/" + userName?.toLowerCase(), {replace: true});
   }
 
 
@@ -104,7 +173,7 @@ const Home = (props) => {
   // console.log("Game", game);
   // console.log("nextUser", nextUser);
   // console.log("Index", game[0].gameOrder , game[0]?.gameOrder.indexOf(nextUser));
-  // console.log("Selected:", selectedId, selectedTer);
+  console.log("Selected:", opc);
 
    return(
     <div
@@ -122,8 +191,8 @@ const Home = (props) => {
               terId={territory.name}
               data={{
                 id: territory._id,
-                color: territory.color,
-                quantity: territory.quantity,
+                color: (selectedTer && (territory._id === selectedTer.dataId) ) ? selectedTer.userColor : territory.color,
+                quantity: (selectedTer && (territory._id === selectedTer.dataId) ) ? selectedTer.qty : territory.quantity,
                 user: territory.user
               }}
               params={params}
@@ -135,13 +204,17 @@ const Home = (props) => {
         </svg>
 
         {
-          (params.name?.toLowerCase() === game[0]?.turn?.toLowerCase()) 
+          ((params.name?.toLowerCase() === game[0]?.turn?.toLowerCase()) && users.find((usr)=>usr.quantity > 0)) 
           && 
           <Button 
             onClick={saveTerritory} 
-            disabled={(selectedId === "")
-          }>
-            Save Selection
+            disabled={(selectedId === "")}
+            onMouseOver={()=>{setOpc("1"); setRt("0")}}
+            onMouseOut={()=>{setOpc("0"); setRt("-5")}}
+          >
+            <ButtonText opc={opc} rt={rt}>
+              Save Selection
+            </ButtonText>
           </Button>
         }
 
@@ -155,9 +228,14 @@ const Home = (props) => {
                 <UserColor 
                   style={ { backgroundColor: users.find((usr)=>usr.name === user)?.color } }
                   action={user}
-                  onClick={handleMove}
+                  onClick={(nextUser?.toLowerCase() === user?.toLowerCase()) ? handleMove : undefined}
                 >
-                  { user }
+                  <span action={user}>
+                    { user }
+                  </span>
+                  <CountDisp action={user}> 
+                    { users.find((usr)=>usr.name === user)?.quantity }
+                  </CountDisp>
                 </UserColor>
                 {
                   (nextUser?.toLowerCase() === user?.toLowerCase())

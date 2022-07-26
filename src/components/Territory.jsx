@@ -29,18 +29,18 @@ const Territory = ({xBox, yBox, path, terId, data, params, clickHandler, selecte
     setFullPick(!(territories.find((ter)=>ter.quantity === 0)))
   },[territories])
 
-  console.log("%cFullPick", "font-size:20px; color: orange;", fullPick);
+  // console.log("%cFullPick", "font-size:20px; color: orange;", fullPick);
 
   const handleClick = async (e) => {
-    console.log("%cClick", "font-size:20px; color: orange;", e.target.id);
+    // console.log("%cClick", "font-size:20px; color: orange;", e.target.id);
     if(fullPick) {
       const ter = territories.find((ter)=>ter.name === e.target.id)
       const user = users.find((user)=>{return user?.name?.toLowerCase() === name });
-      if(ter.user ===  user?._id) {
-        clickHandler(e.target.id, data.id, user._id, user.color, (ter.quantity + 1));
-        setColor(user.color);
+      if((ter.user === user?._id) && (user.quantity > 0)) {
         const qty = ter.quantity + 1;
         setClick(qty);
+        clickHandler(e.target.id, data.id, user._id, user.color, (ter.quantity + 1));
+        setColor(user.color);
       }
       return;
     }
