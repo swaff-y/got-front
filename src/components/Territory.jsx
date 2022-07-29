@@ -23,7 +23,7 @@ const Territory = ({xBox, yBox, path, terId, data, params, clickHandler, selecte
       setClick(data.quantity);
       setColor(data.color);
     }
-  },[selectedId])
+  },[selectedId, data, terId])
 
   useEffect(()=>{
     setFullPick(!(territories.find((ter)=>ter.quantity === 0)))
