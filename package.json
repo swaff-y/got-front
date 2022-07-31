@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-app-env start",
-    "build": "react-app-env build",
+    "build": "REACT_APP_BASE_URL=http://-@url@-/api/v1 react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
